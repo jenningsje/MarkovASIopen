@@ -1,13 +1,10 @@
 package config
 
 import (
-	"bufio"
-	"fmt"
-	"log"
-	"os"
-
+	"github.com/jenningsje/MarkovASI/api" // Import the API package to call ConsolidatedData
 	"github.com/caarlos0/env/v10"
 	"github.com/joho/godotenv"
+	"log"
 )
 
 type config struct {
@@ -29,10 +26,12 @@ var Config config
 
 func Init() {
 	// Load environment variables from the .env file
-	godotenv.Load()
+	if err := godotenv.Load(); err != nil {
+		log.Println("Error loading .env file")
+	}
 
 	// Replace DatabaseURL with the first line (URL) from master_api.txt
-	Config.DatabaseURL = consolidated_data()
+	Config.DatabaseURL = api.ConsolidatedData("") // Call the API package function
 
 	// If no URL is found in the file, log an error and stop execution
 	if Config.DatabaseURL == "" {
@@ -45,4 +44,6 @@ func Init() {
 	}); err != nil {
 		log.Fatalf("Unable to parse config: %v\n", err)
 	}
+
+	log.Println("Configuration loaded successfully")
 }
