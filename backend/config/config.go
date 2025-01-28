@@ -1,5 +1,4 @@
 package config
-
 import (
 	"github.com/jenningsje/MarkovASI/api" // Import the API package to call ConsolidatedData
 	"github.com/caarlos0/env/v10"
