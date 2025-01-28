@@ -18,6 +18,7 @@ require (
 	github.com/pressly/goose/v3 v3.19.2
 	github.com/tmc/langchaingo v0.1.8
 	github.com/vektah/gqlparser/v2 v2.5.11
+	github.com/jenningsje/api v1.0.0
 )
 
 require (
