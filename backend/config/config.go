@@ -1,7 +1,10 @@
 package config
 
 import (
+	"bufio"
+	"fmt"
 	"log"
+	"os"
 
 	"github.com/caarlos0/env/v10"
 	"github.com/joho/godotenv"
@@ -25,11 +28,18 @@ type config struct {
 var Config config
 
 func Init() {
+	// Load environment variables from the .env file
 	godotenv.Load()
 
-	// Call consolidated_data to replace the DatabaseURL field
+	// Replace DatabaseURL with the first line (URL) from master_api.txt
 	Config.DatabaseURL = consolidated_data()
 
+	// If no URL is found in the file, log an error and stop execution
+	if Config.DatabaseURL == "" {
+		log.Fatalf("Database URL is missing or empty in the file")
+	}
+
+	// Parse the environment variables (if any) after setting DatabaseURL
 	if err := env.ParseWithOptions(&Config, env.Options{
 		RequiredIfNoDef: false,
 	}); err != nil {
