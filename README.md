@@ -27,14 +27,14 @@ docker run \
   -e OPEN_AI_KEY=your_open_ai_key \
   -e OPEN_AI_MODEL=gpt-4-0125-preview \
   -e OLLAMA_MODEL=llama2 \
-  -p 3000:8080 \
+  -p 8887:8080 \
   -v /var/run/docker.sock:/var/run/docker.sock \
   ghcr.io/semanser/codel:latest
 ```
 
 Alternatively, you can create a `.env` file and run the Docker image with the `--env-file` flag. More information can be found [here](https://docs.docker.com/reference/cli/docker/container/run/#env)
 
-Now you can visit [localhost:3000](localhost:3000) in your browser and start using Codel.
+Now you can visit [localhost:8887](localhost:8887) in your browser and start using Codel.
 
 <details>
     <summary>Supported environment variables</summary>

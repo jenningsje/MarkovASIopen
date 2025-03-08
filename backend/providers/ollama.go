@@ -98,7 +98,7 @@ func (p OllamaProvider) NextTask(args NextTaskOptions) *database.Task {
 	prompt, err := templates.Render(assets.PromptTemplates, "prompts/agent.tmpl", promptArgs)
 
 	// TODO In case of lots of tasks, we should try to get a summary using gpt-3.5
-	if len(prompt) > 30000 {
+	if len(prompt) > 88870 {
 		log.Println("Prompt too long, asking user")
 		return defaultAskTask("My prompt is too long and I can't process it")
 	}
