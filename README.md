@@ -30,11 +30,17 @@ docker run -d --name ollama \
   -p 11434:11434 \
   ollama/ollama
 
+docker ps
+
+docker exec -it <container id> /bin/bash
+
+ollama pull granite3.1-dense
+
+ollama run granite3.1-dense
+
 docker run \
-  -e OPEN_AI_KEY=your_open_ai_key \
-  -e OPEN_AI_MODEL=gpt-4-0125-preview \
-  -e OLLAMA_MODEL=llama2 \
-  -e OLLAMA_SERVER_URL=https://host.docker.internal:11434 \
+  -e OLLAMA_MODEL=granite3.1-dense \
+  -e OLLAMA_SERVER_URL=http://localhost:11434 \
   -p 8887:8080 \
   -v /var/run/docker.sock:/var/run/docker.sock \
   ghcr.io/semanser/codel:latest
