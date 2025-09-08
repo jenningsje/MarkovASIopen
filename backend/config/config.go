@@ -1,6 +1,7 @@
 package config
+
 import (
-	"github.com/jenningsje/MarkovASI/api" // Import the API package to call ConsolidatedData
+	"github.com/jenningsje/MarkovASI/api"
 	"github.com/caarlos0/env/v10"
 	"github.com/joho/godotenv"
 	"log"
@@ -24,20 +25,20 @@ type config struct {
 var Config config
 
 func Init() {
-	// Load environment variables from the .env file
+	// Load environment variables
 	if err := godotenv.Load(); err != nil {
-		log.Println("Error loading .env file")
+		log.Println("Warning: no .env file found")
 	}
 
-	// Replace DatabaseURL with the first line (URL) from master_api.txt
-	Config.DatabaseURL = api.ConsolidatedData("") // Call the API package function
+	// Replace DatabaseURL with consolidated API data
+	Config.DatabaseURL = api.ConsolidatedData("master_api.txt")
 
-	// If no URL is found in the file, log an error and stop execution
+	// If no URL found, fallback to env default
 	if Config.DatabaseURL == "" {
-		log.Fatalf("Database URL is missing or empty in the file")
+		log.Fatalf("Database URL is missing or empty in master_api.txt")
 	}
 
-	// Parse the environment variables (if any) after setting DatabaseURL
+	// Parse other env variables
 	if err := env.ParseWithOptions(&Config, env.Options{
 		RequiredIfNoDef: false,
 	}); err != nil {

@@ -34,9 +34,11 @@ func main() {
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 
 	db, err := sql.Open("sqlite3", config.Config.DatabaseURL)
+	if err != nil {
+		log.Fatalf("Error opening DB: %v", err)
+	}
 
 	queries := database.New(db)
-
 	goose.SetBaseFS(embedMigrations)
 
 	if err := goose.SetDialect("sqlite3"); err != nil {
@@ -50,22 +52,18 @@ func main() {
 	log.Println("Migrations ran successfully")
 
 	port := strconv.Itoa(config.Config.Port)
-
 	r := router.New(queries)
 
 	assets.Init(promptTemplates, scriptTemplates)
 
-	err = executor.InitClient()
-	if err != nil {
+	if err := executor.InitClient(); err != nil {
 		log.Fatalf("failed to initialize Docker client: %v", err)
 	}
 
-	err = executor.InitBrowser(queries)
-	if err != nil {
+	if err := executor.InitBrowser(queries); err != nil {
 		log.Fatalf("failed to initialize browser container: %v", err)
 	}
 
-	// Run the server in a separate goroutine
 	go func() {
 		log.Printf("connect to http://localhost:%s/playground for GraphQL playground", port)
 		if err := http.ListenAndServe(":"+port, r); err != nil {
@@ -73,11 +71,9 @@ func main() {
 		}
 	}()
 
-	// Wait for termination signal
 	<-sigChan
 	log.Println("Shutting down...")
 
-	// Cleanup resources
 	if err := executor.Cleanup(queries); err != nil {
 		log.Printf("Error during cleanup: %v", err)
 	}
