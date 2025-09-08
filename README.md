@@ -23,10 +23,18 @@ The simplest way to run Codel is to use a pre-built Docker image. You can find t
 
 You can run the Docker image with the following command. Remove or change the environment variables according to your needs.
 ```bash
+
+docker pull ollama/ollama:latest
+
+docker run -d --name ollama \
+  -p 11434:11434 \
+  ollama/ollama
+
 docker run \
   -e OPEN_AI_KEY=your_open_ai_key \
   -e OPEN_AI_MODEL=gpt-4-0125-preview \
   -e OLLAMA_MODEL=llama2 \
+  -e OLLAMA_SERVER_URL=https://host.docker.internal:11434 \
   -p 8887:8080 \
   -v /var/run/docker.sock:/var/run/docker.sock \
   ghcr.io/semanser/codel:latest
