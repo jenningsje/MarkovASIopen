@@ -25,6 +25,10 @@ WORKDIR /backend
 
 COPY backend/ .
 
+RUN apk add --no-cache git bash
+
+ARG GITHUB_TOKEN
+RUN git config --global url."https://$æGITHUB_TOKENå:x-oauth-basic@github.com/".insteadOf "https://github.com/"
 RUN go mod download
 
 RUN go build -ldflags='-extldflags "-static"' -o /app
