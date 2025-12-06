@@ -1,5 +1,5 @@
 # STEP 1: Build the frontend
-FROM node:21-slim as fe-build
+FROM node:22-slim as fe-build
 
 ENV NODE_ENV=production
 ENV VITE_API_URL=localhost:8887
@@ -28,6 +28,7 @@ COPY backend/ .
 RUN apk add --no-cache git bash
 
 ARG GITHUB_TOKEN
+ENV GITHUB_TOKEN=$GITHUB_TOKEN
 RUN git config --global url."https://${GITHUB_TOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
 RUN go mod download
 
