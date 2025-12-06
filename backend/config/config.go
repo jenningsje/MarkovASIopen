@@ -42,7 +42,6 @@ func Init() {
 
 	// Determine paths
 	goFileDir, _ := os.Getwd()
-	cppSourcePath := filepath.Join(goFileDir, "../../../api/fetch_apis.cpp")
 	cppBinaryPath := filepath.Join(goFileDir, "../../../api/fetch_apis")
 
 	// Compile C++ file if needed
