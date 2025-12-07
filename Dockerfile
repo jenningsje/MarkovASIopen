@@ -15,5 +15,6 @@ COPY frontend/ .
 RUN rm -rf node_modules yarn.lock
 RUN yarn install --frozen-lockfile --production=false
 RUN ls -la /frontend
+RUN yarn build
 
 CMD ["/bin/sh"]
