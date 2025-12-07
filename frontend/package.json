@@ -20,7 +20,7 @@
     "@radix-ui/react-tabs": "^1.0.4",
     "@radix-ui/react-tooltip": "^1.0.7",
     "@uidotdev/usehooks": "^2.4.1",
-    "@urql/core": "^5.0.0",
+    "@urql/core": "^5.0.1",
     "@urql/devtools": "^2.0.3",
     "@urql/exchange-graphcache": "^6.5.0",
     "@vanilla-extract/css": "^1.14.1",
@@ -76,5 +76,8 @@
     "prettier": "^3.2.5",
     "typescript": "^5.2.2",
     "vite": "^5.1.6"
+  },
+  "resolutions": {
+    "@urql/core": "^5.0.1"
   }
 }
