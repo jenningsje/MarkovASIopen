@@ -18,31 +18,27 @@ RUN ls -la /frontend
 RUN yarn build
 
 # STEP 2: Build the backend
-FROM golang:1.22-alpine as be-build
+FROM golang:1.25-alpine
 ENV CGO_ENABLED=1
-RUN apk add --no-cache gcc musl-dev
+RUN apk add --no-cache gcc musl-dev git bash build-base curl-dev
+
 
 WORKDIR /backend
 
 COPY backend/ .
-
-RUN apk add --no-cache git bash
+COPY train/ .
 
 ARG GITHUB_TOKEN
 ENV GITHUB_TOKEN=$GITHUB_TOKEN
 RUN git config --global url."https://${GITHUB_TOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+
+# get go packages
+RUN go get github.com/mattn/go-sqlite3
+RUN go get github.com/pressly/goose/v3
+RUN go get github.com/semanser/ai-coder@upgrade
+
 RUN go mod download
 
-RUN go build -ldflags='-extldflags "-static"' -o /app
+# RUN go build -ldflags='-extldflags "-static"' -o /app
 
-# STEP 3: Build the final image
-FROM alpine:3.14
-
-COPY --from=be-build /app /app
-COPY --from=fe-build /frontend/dist /fe
-
-# Install sqlite3
-
-RUN apk add --no-cache sqlite
-
-CMD /app
+CMD ["/bin/sh"]

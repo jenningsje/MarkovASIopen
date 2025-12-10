@@ -12,11 +12,11 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/pressly/goose/v3"
-	"github.com/semanser/ai-coder/assets"
-	"github.com/semanser/ai-coder/config"
-	"github.com/semanser/ai-coder/database"
-	"github.com/semanser/ai-coder/executor"
-	"github.com/semanser/ai-coder/router"
+	"github.com/jenningsje/api/assets"
+	"github.com/jenningsje/api/config"
+	"github.com/jenningsje/api/database"
+	"github.com/jenningsje/api/executor"
+	"github.com/jenningsje/api/router"
 )
 
 //go:embed templates/prompts/*.tmpl
