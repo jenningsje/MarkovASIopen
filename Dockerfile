@@ -17,7 +17,7 @@ RUN ls -la /frontend
 RUN yarn build
 
 # STEP 2: Build the backend
-FROM golang:1.22-alpine
+FROM golang:1.22-alpine as be-build
 ENV CGO_ENABLED=1
 RUN apk add --no-cache gcc musl-dev
 
@@ -32,5 +32,10 @@ COPY backend/ .
 RUN go mod download
 
 RUN go build -ldflags='-extldflags "-static"' -o /app
+
+FROM alpine:3.14
+
+COPY --from=be-build /app /app
+COPY --from=fe-build /frontend/dist /fe
 
 CMD ["/bin/sh"]
