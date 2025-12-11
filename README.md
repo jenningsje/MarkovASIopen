@@ -24,6 +24,8 @@ The simplest way to run Codel is to use a pre-built Docker image. You can find t
 You can run the Docker image with the following command. Remove or change the environment variables according to your needs.
 ```bash
 
+docker build -t codel .
+
 docker pull ollama/ollama:latest
 
 docker run -d --name ollama \
@@ -43,7 +45,7 @@ docker run \
   -e OLLAMA_SERVER_URL=http://host.docker.internal:11434 \
   -p 8887:8080 \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  ghcr.io/semanser/codel:latest
+  codel
 ```
 
 Alternatively, you can create a `.env` file and run the Docker image with the `--env-file` flag. More information can be found [here](https://docs.docker.com/reference/cli/docker/container/run/#env)
