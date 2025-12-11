@@ -423,16 +423,13 @@ import { IntrospectionQuery } from 'graphql';
 export default {
   "__schema": {
     "queryType": {
-      "name": "Query",
-      "kind": "OBJECT"
+      "name": "Query"
     },
     "mutationType": {
-      "name": "Mutation",
-      "kind": "OBJECT"
+      "name": "Mutation"
     },
     "subscriptionType": {
-      "name": "Subscription",
-      "kind": "OBJECT"
+      "name": "Subscription"
     },
     "types": [
       {

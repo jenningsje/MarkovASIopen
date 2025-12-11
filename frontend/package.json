@@ -20,7 +20,6 @@
     "@radix-ui/react-tabs": "^1.0.4",
     "@radix-ui/react-tooltip": "^1.0.7",
     "@uidotdev/usehooks": "^2.4.1",
-    "@urql/core": "^5.0.1",
     "@urql/devtools": "^2.0.3",
     "@urql/exchange-graphcache": "^6.5.0",
     "@vanilla-extract/css": "^1.14.1",
@@ -50,23 +49,8 @@
     "@graphql-codegen/typescript-urql": "^4.0.0",
     "@graphql-codegen/urql-introspection": "^3.0.0",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
-    "@types/cacheable-request": "^8.3.6",
-    "@types/chai": "^5.2.3",
-    "@types/eslint": "^9.6.1",
-    "@types/express-serve-static-core": "^5.1.0",
-    "@types/fs-extra": "^11.0.4",
-    "@types/html-minifier-terser": "^7.0.2",
-    "@types/http-cache-semantics": "^4.0.4",
-    "@types/http-proxy": "^1.17.17",
-    "@types/json-schema": "^7.0.15",
-    "@types/mathjax": "^0.0.40",
-    "@types/mdast": "^4.0.4",
-    "@types/node-forge": "^1.3.14",
     "@types/react": "^18.2.64",
     "@types/react-dom": "^18.2.21",
-    "@types/react-syntax-highlighter": "^15.5.13",
-    "@types/send": "^1.2.1",
-    "@types/tough-cookie": "^4.0.5",
     "@typescript-eslint/eslint-plugin": "^7.1.1",
     "@typescript-eslint/parser": "^7.1.1",
     "@vitejs/plugin-react": "^4.2.1",
@@ -76,8 +60,5 @@
     "prettier": "^3.2.5",
     "typescript": "^5.2.2",
     "vite": "^5.1.6"
-  },
-  "resolutions": {
-    "@urql/core": "^5.0.1"
   }
 }

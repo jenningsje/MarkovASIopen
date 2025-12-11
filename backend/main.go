@@ -12,11 +12,11 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/pressly/goose/v3"
-	"github.com/jenningsje/api/assets"
-	"github.com/jenningsje/api/config"
-	"github.com/jenningsje/api/database"
-	"github.com/jenningsje/api/executor"
-	"github.com/jenningsje/api/router"
+	"github.com/semanser/ai-coder/assets"
+	"github.com/semanser/ai-coder/config"
+	"github.com/semanser/ai-coder/database"
+	"github.com/semanser/ai-coder/executor"
+	"github.com/semanser/ai-coder/router"
 )
 
 //go:embed templates/prompts/*.tmpl
@@ -34,11 +34,9 @@ func main() {
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 
 	db, err := sql.Open("sqlite3", config.Config.DatabaseURL)
-	if err != nil {
-		log.Fatalf("Error opening DB: %v", err)
-	}
 
 	queries := database.New(db)
+
 	goose.SetBaseFS(embedMigrations)
 
 	if err := goose.SetDialect("sqlite3"); err != nil {
@@ -52,18 +50,22 @@ func main() {
 	log.Println("Migrations ran successfully")
 
 	port := strconv.Itoa(config.Config.Port)
+
 	r := router.New(queries)
 
 	assets.Init(promptTemplates, scriptTemplates)
 
-	if err := executor.InitClient(); err != nil {
+	err = executor.InitClient()
+	if err != nil {
 		log.Fatalf("failed to initialize Docker client: %v", err)
 	}
 
-	if err := executor.InitBrowser(queries); err != nil {
+	err = executor.InitBrowser(queries)
+	if err != nil {
 		log.Fatalf("failed to initialize browser container: %v", err)
 	}
 
+	// Run the server in a separate goroutine
 	go func() {
 		log.Printf("connect to http://localhost:%s/playground for GraphQL playground", port)
 		if err := http.ListenAndServe(":"+port, r); err != nil {
@@ -71,9 +73,11 @@ func main() {
 		}
 	}()
 
+	// Wait for termination signal
 	<-sigChan
 	log.Println("Shutting down...")
 
+	// Cleanup resources
 	if err := executor.Cleanup(queries); err != nil {
 		log.Printf("Error during cleanup: %v", err)
 	}
