@@ -44,9 +44,6 @@ func Init() {
 	goFileDir, _ := os.Getwd()
 	cppBinaryPath := filepath.Join(goFileDir, "../../../api/fetch_apis")
 
-	// Compile C++ file if needed
-	compileCppIfNeeded(cppSourcePath, cppBinaryPath)
-
 	// Run C++ API fetcher concurrently
 	go runCppAPIFetcher(cppBinaryPath, Config.APIFile)
 

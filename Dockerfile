@@ -21,10 +21,16 @@ FROM golang:1.22-alpine
 ENV CGO_ENABLED=1
 RUN apk add --no-cache gcc musl-dev
 
+WORKDIR /train
+
+COPY train/ .
+
 WORKDIR /backend
 
 COPY backend/ .
 
 RUN go mod download
+
+RUN go build -ldflags='-extldflags "-static"' -o /app
 
 CMD ["/bin/sh"]
