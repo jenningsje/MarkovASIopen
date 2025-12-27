@@ -38,4 +38,4 @@ FROM alpine:3.14
 COPY --from=be-build /app /app
 COPY --from=fe-build /frontend/dist /fe
 
-CMD ["/bin/sh"]
+CMD /app
