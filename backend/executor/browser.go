@@ -32,16 +32,7 @@ func InitBrowser(db *database.Queries) error {
 		ExposedPorts: nat.PortSet{
 			portBinding: struct{}{},
 		},
-		Cmd: []string{
-    "chrome",
-    "--headless=new",
-    "--no-sandbox",
-    "--disable-gpu-sandbox",
-    "--enable-gpu",
-    "--use-gl=egl",
-    fmt.Sprintf("--remote-debugging-port=%s", port),
-    "--remote-debugging-address=0.0.0.0",
-},
+		Cmd: []string{"chrome", "--headless", "--no-sandbox", fmt.Sprintf("--remote-debugging-port=%s", port), "--remote-debugging-address=0.0.0.0"},
 	}, &container.HostConfig{
 		PortBindings: nat.PortMap{
 			portBinding: []nat.PortBinding{
