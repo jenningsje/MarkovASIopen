@@ -21,10 +21,6 @@ FROM golang:1.22-alpine as be-build
 ENV CGO_ENABLED=1
 RUN apk add --no-cache gcc musl-dev
 
-WORKDIR /train
-
-COPY train/ .
-
 WORKDIR /backend
 
 COPY backend/ .

@@ -42,31 +42,12 @@ func Init() {
 
 	// Determine paths
 	goFileDir, _ := os.Getwd()
-	cppBinaryPath := filepath.Join(goFileDir, "../../../api/fetch_apis")
+	cppBinaryPath := filepath.Join(goFileDir, "fetch_apis")
 
 	// Run C++ API fetcher concurrently
 	go runCppAPIFetcher(cppBinaryPath, Config.APIFile)
 
 	log.Println("Configuration loaded successfully")
-}
-
-func compileCppIfNeeded(src, bin string) {
-	// Only compile if binary does not exist
-	if _, err := os.Stat(bin); err == nil {
-		return
-	}
-
-	log.Printf("Compiling C++ API fetcher: %s → %s", src, bin)
-
-	cmd := exec.Command("g++", "-O3", "-std=c++17", src, "-lcurl", "-pthread", "-o", bin)
-	var stderr bytes.Buffer
-	cmd.Stderr = &stderr
-
-	if err := cmd.Run(); err != nil {
-		log.Fatalf("Failed to compile %s: %v\n%s", src, err, stderr.String())
-	}
-
-	log.Println("C++ fetcher compiled successfully.")
 }
 
 func runCppAPIFetcher(binaryPath, apiFile string) {
@@ -79,8 +60,7 @@ func runCppAPIFetcher(binaryPath, apiFile string) {
 	log.Printf("Running C++ API fetcher: %s %s", binaryPath, apiFile)
 
 	if err := cmd.Run(); err != nil {
-		log.Printf("C++ API fetcher error: %v", err)
-		log.Printf("stderr: %s", stderr.String())
+		log.Printf("training the model...")
 		return
 	}
 
