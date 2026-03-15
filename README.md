@@ -17,6 +17,8 @@
 # Getting started
 The simplest way to run Codel is to use a pre-built Docker image. You can find the latest image on the [Github Container Registry](https://github.com/semanser/codel/pkgs/container/codel).
 
+# Mac OS
+For Mac OS users who will use Ollama it is recommended to download ollama here: https://ollama.com/download/mac and run it with your model of choice for optimal performance.
 
 > [!IMPORTANT]
 > You need to use a corresponding environment variable in order to use any of the supported language models.
