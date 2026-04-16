@@ -1,20 +1,14 @@
 package config
-
 import (
-	"bytes"
-	"log"
-	"os"
-	"os/exec"
-	"path/filepath"
-
+	"github.com/jenningsje/MarkovASI/api" // Import the API package to call ConsolidatedData
 	"github.com/caarlos0/env/v10"
 	"github.com/joho/godotenv"
+	"log"
 )
 
 type config struct {
 	// General
 	DatabaseURL string `env:"DATABASE_URL" envDefault:"database.db"`
-	APIFile     string `env:"API_FILE" envDefault:"apis.txt"` // passed to C++ program
 	Port        int    `env:"PORT" envDefault:"8080"`
 
 	// OpenAI
@@ -30,42 +24,25 @@ type config struct {
 var Config config
 
 func Init() {
-	// Load environment variables
+	// Load environment variables from the .env file
 	if err := godotenv.Load(); err != nil {
-		log.Println("Warning: no .env file found")
+		log.Println("Error loading .env file")
 	}
 
-	// Parse environment vars
-	if err := env.Parse(&Config); err != nil {
-		log.Fatalf("Unable to parse config: %v", err)
+	// Replace DatabaseURL with the first line (URL) from master_api.txt
+	Config.DatabaseURL = api.ConsolidatedData("") // Call the API package function
+
+	// If no URL is found in the file, log an error and stop execution
+	if Config.DatabaseURL == "" {
+		log.Fatalf("Database URL is missing or empty in the file")
 	}
 
-	// Determine paths
-	goFileDir, _ := os.Getwd()
-	cppBinaryPath := filepath.Join(goFileDir, "fetch_apis")
-
-	// Run C++ API fetcher concurrently
-	go runCppAPIFetcher(cppBinaryPath, Config.APIFile)
+	// Parse the environment variables (if any) after setting DatabaseURL
+	if err := env.ParseWithOptions(&Config, env.Options{
+		RequiredIfNoDef: false,
+	}); err != nil {
+		log.Fatalf("Unable to parse config: %v\n", err)
+	}
 
 	log.Println("Configuration loaded successfully")
-}
-
-func runCppAPIFetcher(binaryPath, apiFile string) {
-	cmd := exec.Command(binaryPath, apiFile)
-
-	var stdout, stderr bytes.Buffer
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
-
-	log.Printf("Running C++ API fetcher: %s %s", binaryPath, apiFile)
-
-	if err := cmd.Run(); err != nil {
-		log.Printf("training the model...")
-		return
-	}
-
-	out := stdout.String()
-	log.Printf("C++ fetcher finished (%d bytes output)", len(out))
-
-	// TODO: parse/stash results if needed
 }

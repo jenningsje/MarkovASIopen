@@ -2,7 +2,7 @@
 FROM node:21-slim as fe-build
 
 ENV NODE_ENV=production
-ENV VITE_API_URL=localhost:3000
+ENV VITE_API_URL=localhost:8887
 
 WORKDIR /frontend
 
@@ -29,9 +29,14 @@ RUN go mod download
 
 RUN go build -ldflags='-extldflags "-static"' -o /app
 
+# STEP 3: Build the final image
 FROM alpine:3.14
 
 COPY --from=be-build /app /app
 COPY --from=fe-build /frontend/dist /fe
+
+# Install sqlite3
+
+RUN apk add --no-cache sqlite
 
 CMD /app
