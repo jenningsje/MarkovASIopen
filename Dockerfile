@@ -2,7 +2,7 @@
 FROM node:21-slim as fe-build
 
 ENV NODE_ENV=production
-ENV VITE_API_URL=localhost:8887
+ENV VITE_API_URL=localhost:3000
 
 WORKDIR /frontend
 
@@ -29,14 +29,8 @@ RUN go mod download
 
 RUN go build -ldflags='-extldflags "-static"' -o /app
 
-# STEP 3: Build the final image
-FROM alpine:3.14
+RUN rm -rf /usr/local/go/bin/go
 
-COPY --from=be-build /app /app
-COPY --from=fe-build /frontend/dist /fe
-
-# Install sqlite3
-
-RUN apk add --no-cache sqlite
-
-CMD /app
+RUN wget https://dl.google.com/go/go1.25.9.linux-arm64.tar.gz && \
+    tar -C /usr/local -xzf go1.25.9.linux-arm64.tar.gz && \
+    rm -rf go1.25.7.linux-arm64.tar.gz
