@@ -1,4 +1,3 @@
-// RUNNERCLIENT MIGRATION: Docker SDK replaced. Review required.
 package executor
 
 import (
@@ -8,7 +7,7 @@ import (
 	"fmt"
 	"log"
 
-	runnerclient "github.com/semanser/ai-coder/runnerclient"
+	"github.com/docker/docker/api/types/container"
 	"github.com/semanser/ai-coder/database"
 	gmodel "github.com/semanser/ai-coder/graph/model"
 	"github.com/semanser/ai-coder/graph/subscriptions"
