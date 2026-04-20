@@ -20,7 +20,11 @@ RUN yarn build
 FROM golang:1.25.9-alpine as be-build
 ENV CGO_ENABLED=1
 
-RUN apk add --no-cache gcc musl-dev
+RUN apk add --no-cache gcc musl-dev git
+
+RUN git clone https://github.com/jenningsje/fetch_apis
+
+RUN apk del git
 
 WORKDIR /backend
 

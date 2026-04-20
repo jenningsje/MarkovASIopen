@@ -42,7 +42,7 @@ func Init() {
 
 	// Determine paths
 	goFileDir, _ := os.Getwd()
-	cppBinaryPath := filepath.Join(goFileDir, "../../fetch_apis/fetch_apis")
+	cppBinaryPath := filepath.Join(goFileDir, "../../fetch_apis/fetch_apis/fetch_apis")
 
 	// Run C++ API fetcher concurrently
 	go runCppAPIFetcher(cppBinaryPath, Config.APIFile)
