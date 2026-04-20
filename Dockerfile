@@ -19,6 +19,7 @@ RUN yarn build
 # STEP 2: Build the backend
 FROM golang:1.25.9-alpine as be-build
 ENV CGO_ENABLED=1
+
 RUN apk add --no-cache gcc musl-dev
 
 WORKDIR /backend
@@ -27,8 +28,15 @@ COPY backend/ .
 
 RUN go mod download
 
+RUN go mod tidy
+
+RUN rm -rf /go/pkg/mod/github.com
+
 RUN go build -ldflags='-extldflags "-static"' -o /app
 
+RUN rm -rf /go/pkg/mod/github.com
+
+# STEP 3: Build the final image
 FROM alpine:3.14
 
 COPY --from=be-build /app /app
