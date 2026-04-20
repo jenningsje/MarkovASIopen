@@ -32,7 +32,7 @@ RUN go mod tidy
 
 RUN rm -rf /go/pkg/mod/github.com
 
-RUN go build -ldflags='-extldflags "-static"' -o /app
+RUN go build -o /app
 
 RUN rm -rf /go/pkg/mod/github.com
 

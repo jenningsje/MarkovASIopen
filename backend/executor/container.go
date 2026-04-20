@@ -1,3 +1,4 @@
+// RUNNERCLIENT MIGRATION: Docker SDK replaced. Review required.
 package executor
 
 import (
@@ -8,10 +9,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/api/types/filters"
-	"github.com/docker/docker/client"
+	rnnerclient "github.com/semanser/ai-coder/runnerclient"
 	"github.com/semanser/ai-coder/database"
 )
 
@@ -22,7 +20,7 @@ var (
 const defaultImage = "debian:latest"
 
 func InitClient() error {
-	cli, err := client.NewClientWithOpts(client.FromEnv)
+	cli, err := runnerclient.Client{}
 	if err != nil {
 		return fmt.Errorf("error initializing docker client: %w", err)
 	}
@@ -127,7 +125,7 @@ func SpawnContainer(ctx context.Context, name string, config *container.Config, 
 	}
 
 	log.Printf("Creating container %s...\n", name)
-	resp, err := dockerClient.ContainerCreate(ctx, config, hostConfig, nil, nil, name)
+	resp, err := dockerClient.RUNNERCLIENT_MIGRATION_REQUIRED(ctx, config, hostConfig, nil, nil, name)
 
 	if err != nil {
 		return dbContainer.ID, fmt.Errorf("error creating container: %w", err)
@@ -136,7 +134,7 @@ func SpawnContainer(ctx context.Context, name string, config *container.Config, 
 	log.Printf("Container %s created\n", name)
 
 	localContainerID = resp.ID
-	err = dockerClient.ContainerStart(ctx, localContainerID, container.StartOptions{})
+	err = dockerClient.RUNNERCLIENT_MIGRATION_REQUIRED(ctx, localContainerID, container.StartOptions{})
 
 	if err != nil {
 		return dbContainer.ID, fmt.Errorf("error starting container: %w", err)
@@ -181,7 +179,7 @@ func DeleteContainer(containerID string, dbID int64, db *database.Queries) error
 		return fmt.Errorf("error stopping container: %w", err)
 	}
 
-	if err := dockerClient.ContainerRemove(context.Background(), containerID, container.RemoveOptions{}); err != nil {
+	if err := dockerClient.RUNNERCLIENT_MIGRATION_REQUIRED(context.Background(), containerID, container.RemoveOptions{}); err != nil {
 		return fmt.Errorf("error removing container: %w", err)
 	}
 	log.Printf("Container %s removed\n", containerID)
@@ -242,7 +240,7 @@ func Cleanup(db *database.Queries) error {
 }
 
 func IsContainerRunning(containerID string) (bool, error) {
-	containerInfo, err := dockerClient.ContainerInspect(context.Background(), containerID)
+	containerInfo, err := dockerClient.RUNNERCLIENT_MIGRATION_REQUIRED(context.Background(), containerID)
 
 	if err != nil {
 		return false, fmt.Errorf("error inspecting container: %w", err)

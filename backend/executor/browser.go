@@ -1,3 +1,4 @@
+// RUNNERCLIENT MIGRATION: Docker SDK replaced. Review required.
 package executor
 
 import (
@@ -7,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/docker/docker/api/types/container"
+	runnerclient "github.com/semanser/ai-coder/runnerclient"
 	"github.com/docker/go-connections/nat"
 	"github.com/go-rod/rod"
 	"github.com/go-rod/rod/lib/launcher"
