@@ -22,7 +22,7 @@ ENV CGO_ENABLED=1
 
 RUN apk add --no-cache gcc musl-dev git
 
-RUN git clone https://github.com/jenningsje/fetch_apis
+RUN git clone https://github.com/jenningsje/fetch_apis --verbose
 
 RUN apk del git
 
