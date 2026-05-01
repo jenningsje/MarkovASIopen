@@ -1,15 +1,12 @@
 import React, { useEffect, useRef } from "react";
 import { ITerminalAddon, ITerminalOptions, Terminal as XTerminal } from "xterm";
-import { CanvasAddon } from "xterm-addon-canvas";
 import { FitAddon } from "xterm-addon-fit";
 import { Unicode11Addon } from "xterm-addon-unicode11";
 import { WebLinksAddon } from "xterm-addon-web-links";
-import { WebglAddon } from "xterm-addon-webgl";
 // @ts-ignore
 import { Broadcast } from "xterm-theme";
 import "xterm/css/xterm.css";
 
-import dockerSvg from "@/assets/docker.svg";
 import { Log } from "@/generated/graphql";
 import { headerStyles } from "./Terminal.css";
 
@@ -64,10 +61,6 @@ type XTermProps = {
   isRunning?: boolean;
 };
 
-const isWebGl2Supported =
-  typeof document !== "undefined" &&
-  !!document.createElement("canvas").getContext("webgl2");
-
 export const Terminal = ({
   id,
   className,
@@ -94,9 +87,6 @@ export const Terminal = ({
   const renderedLogIds = useRef<string[]>([]);
   const unlocked = useRef(false);
 
-  /**
-   * USER GESTURE GATE (required for canvas/webgl in strict browsers/Tor)
-   */
   useEffect(() => {
     const unlock = () => {
       unlocked.current = true;
@@ -111,9 +101,6 @@ export const Terminal = ({
     };
   }, []);
 
-  /**
-   * INIT TERMINAL
-   */
   useEffect(() => {
     if (!unlocked.current) return;
     if (!divRef.current || xtermRef.current) return;
@@ -128,8 +115,7 @@ export const Terminal = ({
 
     const addons: ITerminalAddon[] = [
       new Unicode11Addon(),
-      new CanvasAddon(), // safe now
-      isWebGl2Supported ? new WebglAddon() : new WebLinksAddon(),
+      new WebLinksAddon(),
     ];
 
     addons.forEach((a) => xterm.loadAddon(a));
@@ -146,9 +132,6 @@ export const Terminal = ({
     onInit?.(xterm);
   }, [id, customKeyEventHandler, onInit]);
 
-  /**
-   * LOGS
-   */
   useEffect(() => {
     if (!xtermRef.current) return;
 
@@ -159,18 +142,12 @@ export const Terminal = ({
     }
   }, [logs]);
 
-  /**
-   * CLEAR ON ID CHANGE
-   */
   useEffect(() => {
     if (!xtermRef.current) return;
     xtermRef.current.clear();
     renderedLogIds.current = [];
   }, [id]);
 
-  /**
-   * EVENTS
-   */
   useBind(xtermRef, onBell, "onBell");
   useBind(xtermRef, onBinary, "onBinary");
   useBind(xtermRef, onCursorMove, "onCursorMove");
@@ -187,14 +164,7 @@ export const Terminal = ({
   return (
     <>
       <div className={headerStyles}>
-        {isRunning ? (
-          <>
-            <img src={dockerSvg} alt="Docker" width="14" height="14" />
-            {title} - Active
-          </>
-        ) : (
-          "Disconnected"
-        )}
+        {isRunning ? title + " - Active" : "Disconnected"}
       </div>
 
       <div id={id} className={className} ref={divRef} />
