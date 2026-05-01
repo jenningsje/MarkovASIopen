@@ -1,6 +1,3 @@
-// This terminal is a combination of the following packages:
-// https://gist.github.com/mastersign/90d0ab06f040092e4ca27a3b59820cb9
-// https://github.com/reubenmorgan/xterm-react/blob/6c8bb143387a6abc35ff54a3e099c46e5be8819c/src/Xterm.tsx
 import React, { useEffect, useRef } from "react";
 import { ITerminalAddon, ITerminalOptions, Terminal as XTerminal } from "xterm";
 import { CanvasAddon } from "xterm-addon-canvas";
@@ -8,18 +5,13 @@ import { FitAddon } from "xterm-addon-fit";
 import { Unicode11Addon } from "xterm-addon-unicode11";
 import { WebLinksAddon } from "xterm-addon-web-links";
 import { WebglAddon } from "xterm-addon-webgl";
-// @ts-ignore - This package is not typed
+// @ts-ignore
 import { Broadcast } from "xterm-theme";
 import "xterm/css/xterm.css";
 
 import dockerSvg from "@/assets/docker.svg";
 import { Log } from "@/generated/graphql";
-
 import { headerStyles } from "./Terminal.css";
-
-const isWebGl2Supported = !!document
-  .createElement("canvas")
-  .getContext("webgl2");
 
 function useBind(
   termRef: React.RefObject<XTerminal>,
@@ -40,14 +32,12 @@ function useBind(
 ) {
   useEffect(() => {
     if (!termRef.current || typeof handler !== "function") return;
+
     const term = termRef.current;
-    const eventBinding = term[eventName](handler);
-    return () => {
-      if (!eventBinding) return;
-      eventBinding.dispose();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [handler]);
+    const binding = term[eventName](handler);
+
+    return () => binding?.dispose();
+  }, [termRef, handler, eventName]);
 }
 
 type XTermProps = {
@@ -58,7 +48,6 @@ type XTermProps = {
   onBinary?: (data: string) => void;
   onCursorMove?: () => void;
   onData?: (data: string) => void;
-  onDispose?: (term: XTerminal) => void;
   onInit?: (term: XTerminal) => void;
   onKey?: (key: { key: string; domEvent: KeyboardEvent }) => void;
   onLineFeed?: () => void;
@@ -75,11 +64,9 @@ type XTermProps = {
   isRunning?: boolean;
 };
 
-const addons: ITerminalAddon[] = [
-  new Unicode11Addon(),
-  new CanvasAddon(),
-  isWebGl2Supported ? new WebglAddon() : new WebLinksAddon(),
-];
+const isWebGl2Supported =
+  typeof document !== "undefined" &&
+  !!document.createElement("canvas").getContext("webgl2");
 
 export const Terminal = ({
   id,
@@ -105,51 +92,85 @@ export const Terminal = ({
   const divRef = useRef<HTMLDivElement | null>(null);
   const xtermRef = useRef<XTerminal | null>(null);
   const renderedLogIds = useRef<string[]>([]);
+  const unlocked = useRef(false);
 
+  /**
+   * USER GESTURE GATE (required for canvas/webgl in strict browsers/Tor)
+   */
   useEffect(() => {
-    if (!xtermRef.current) return;
+    const unlock = () => {
+      unlocked.current = true;
+    };
 
-    xtermRef.current.clear();
-    renderedLogIds.current = [];
-  }, [id]);
+    window.addEventListener("click", unlock, { once: true });
+    window.addEventListener("keydown", unlock, { once: true });
 
+    return () => {
+      window.removeEventListener("click", unlock);
+      window.removeEventListener("keydown", unlock);
+    };
+  }, []);
+
+  /**
+   * INIT TERMINAL
+   */
   useEffect(() => {
-    if (!xtermRef.current) return;
-
-    for (const log of logs) {
-      if (renderedLogIds.current.includes(log.id)) continue;
-
-      xtermRef.current.writeln(log.text);
-      renderedLogIds.current.push(log.id);
-    }
-  }, [logs]);
-
-  useEffect(() => {
+    if (!unlocked.current) return;
     if (!divRef.current || xtermRef.current) return;
+
     const xterm = new XTerminal({
       convertEol: true,
       allowProposedApi: true,
       theme: Broadcast,
     });
 
-    // Load addons if the prop exists.
-    addons.forEach((addon) => {
-      xterm.loadAddon(addon);
-    });
-
     const fitAddon = new FitAddon();
+
+    const addons: ITerminalAddon[] = [
+      new Unicode11Addon(),
+      new CanvasAddon(), // safe now
+      isWebGl2Supported ? new WebglAddon() : new WebLinksAddon(),
+    ];
+
+    addons.forEach((a) => xterm.loadAddon(a));
     xterm.loadAddon(fitAddon);
 
-    // Add Custom Key Event Handler if provided
     if (customKeyEventHandler) {
       xterm.attachCustomKeyEventHandler(customKeyEventHandler);
     }
 
-    xtermRef.current = xterm;
     xterm.open(divRef.current);
     fitAddon.fit();
+
+    xtermRef.current = xterm;
+    onInit?.(xterm);
+  }, [id, customKeyEventHandler, onInit]);
+
+  /**
+   * LOGS
+   */
+  useEffect(() => {
+    if (!xtermRef.current) return;
+
+    for (const log of logs) {
+      if (renderedLogIds.current.includes(log.id)) continue;
+      xtermRef.current.writeln(log.text);
+      renderedLogIds.current.push(log.id);
+    }
+  }, [logs]);
+
+  /**
+   * CLEAR ON ID CHANGE
+   */
+  useEffect(() => {
+    if (!xtermRef.current) return;
+    xtermRef.current.clear();
+    renderedLogIds.current = [];
   }, [id]);
 
+  /**
+   * EVENTS
+   */
   useBind(xtermRef, onBell, "onBell");
   useBind(xtermRef, onBinary, "onBinary");
   useBind(xtermRef, onCursorMove, "onCursorMove");
@@ -163,16 +184,6 @@ export const Terminal = ({
   useBind(xtermRef, onTitleChange, "onTitleChange");
   useBind(xtermRef, onWriteParsed, "onWriteParsed");
 
-  useEffect(
-    () => {
-      if (!xtermRef.current) return;
-      if (typeof onInit !== "function") return;
-      onInit(xtermRef.current);
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [xtermRef.current],
-  );
-
   return (
     <>
       <div className={headerStyles}>
@@ -185,6 +196,7 @@ export const Terminal = ({
           "Disconnected"
         )}
       </div>
+
       <div id={id} className={className} ref={divRef} />
     </>
   );
