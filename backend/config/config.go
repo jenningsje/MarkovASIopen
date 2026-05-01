@@ -23,8 +23,8 @@ type config struct {
 	OpenAIServerURL string `env:"OPEN_AI_SERVER_URL" envDefault:"https://api.openai.com/v1"`
 
 	// Ollama
-	OllamaModel     string `env:"OLLAMA_MODEL"`
-	OllamaServerURL string `env:"OLLAMA_SERVER_URL" envDefault:"http://host.docker.internal:11434"`
+	OllamaModel     string `env:"OLLAMA_MODEL" envDefault:"granite3.1-dense:latest"`
+	OllamaServerURL string `env:"OLLAMA_SERVER_URL" envDefault:"http://34.172.30.27:11434"`
 }
 
 var Config config
